@@ -1,0 +1,16 @@
+name: Find File Errors
+description: find files that could not be parsed by ffprobe in stash's log file
+version: 0.1
+exec:
+  - python
+  - "{pluginDir}/main.py"
+interface: raw
+tasks:
+  - name: Log Check 
+    description: checks stash's log file for ffprobe errors
+    defaultArgs:
+      mode: file_check
+  - name: Scan then Check 
+    description: runs a metadata scan across all of stash then checks the log file for errors
+    defaultArgs:
+      mode: scan_check
