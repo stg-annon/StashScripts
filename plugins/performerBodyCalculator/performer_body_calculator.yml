@@ -1,0 +1,16 @@
+name: "Performer Body Calculator"
+description: Tags performers based on existing metadata, with tags matching the performers body type
+version: 1.0
+exec:
+  - python
+  - "{pluginDir}/performer_body_calculator.py"
+interface: raw
+tasks:
+  - name: 'Calculate'
+    description: 'Assigns Tags to performers based on measurements'
+    defaultArgs:
+      mode: run_calculator
+  - name: 'Destroy Managed Tags'
+    description: 'Removes generated tags from stash'
+    defaultArgs:
+      mode: destroy_managed_tags
