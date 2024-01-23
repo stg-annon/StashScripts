@@ -1,16 +1,24 @@
 name: Find File Errors
-description: find files that could not be parsed by ffprobe in stash's log file
+description: find files that stash has previously errored on from the log file
 version: 0.1
 exec:
   - python
   - "{pluginDir}/main.py"
 interface: raw
 tasks:
-  - name: Log Check 
-    description: checks stash's log file for ffprobe errors
+  - name: Find Scan Errors
+    description: checks for files that could not be added to stash and lists them in a text file
     defaultArgs:
-      mode: file_check
+      mode: scan_errors
+  - name: Find Generate Errors 
+    description: checks log file for errors related to generation task tags the related scene
+    defaultArgs:
+      mode: generate_errors
   - name: Scan then Check 
     description: runs a metadata scan across all of stash then checks the log file for errors
     defaultArgs:
       mode: scan_check
+  # - name: Generate then Check 
+  #   description: runs a generate task across all of stash then checks the log file for errors
+  #   defaultArgs:
+  #     mode: generate_check
