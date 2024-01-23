@@ -1,6 +1,6 @@
 name: Find File Errors
 description: find files that stash has previously errored on from the log file
-version: 0.1
+version: 0.2
 exec:
   - python
   - "{pluginDir}/main.py"
