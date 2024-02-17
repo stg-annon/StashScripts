@@ -81,7 +81,7 @@ def find_generate_errors():
 def tag_scenes_with_file_errors(file_errors):
 
 	count = len(file_errors)
-	log.info(f"found {count} files errors looking for related scenes...")
+	log.info(f"found {count} file errors looking for related scenes...")
 
 	tag_id_lookup = {}
 

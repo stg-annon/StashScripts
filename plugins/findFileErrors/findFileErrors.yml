@@ -15,10 +15,10 @@ tasks:
     defaultArgs:
       mode: generate_errors
   - name: Scan then Check 
-    description: runs a metadata scan across all of stash then checks the log file for errors
+    description: A FULL SCAN MAY TAKE A LONG TIME:runs a metadata scan across all of stash then checks the log file for errors
     defaultArgs:
       mode: scan_check
   # - name: Generate then Check 
-  #   description: runs a generate task across all of stash then checks the log file for errors
+  #   description: A FULL GENERATE TASK MAY TAKE A VERY LONG TIME:runs a generate task across all of stash then checks the log file for errors
   #   defaultArgs:
   #     mode: generate_check
