@@ -9,10 +9,13 @@ This plugin has four functions:
 
 ## Title Syntax
 
-This plugin will change the titles of scenes that are matched as duplicates in the following format
+This plugin will change the titles of scenes that are matched as duplicates this can be customized with the `SCENE_TITLE_TEMPLATE` value in the config file
 
-`[PDT: 0.0GB|<group_id><keep_flag>] <Scene Title>`
+The following is the default format:
 
+`[PDT: <group_size>GB|<group_id><keep_flag>] <Scene Title>`
+
+group_size: the total size of all the duplicate scenes in GB
 group_id: usually the scene ID of the scene that was selected to Keep
 keep_flag: K=Keep R=remove U=Unknown
 
