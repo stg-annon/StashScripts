@@ -7,6 +7,9 @@ import stashapi.log as log
 
 plugin_path = Path(__file__).parent
 
+txt_file_path = Path(plugin_path, "errors")
+txt_file_path.mkdir(exist_ok=True)
+
 TAG_TEMPLATE = Template("[FileError] $error_type generation error")
         
 def main():
@@ -45,7 +48,7 @@ def find_scan_errors():
 				continue
 			file_errors[m.group(2)] = m.groupdict()
 
-	errors_path = Path(plugin_path,"scan_errors.txt")
+	errors_path = Path(txt_file_path,"scan_errors.txt")
 	with open(errors_path, "w") as error_log:
 		for file_path, match_dict in file_errors.items():
 			file_path = Path(file_path)
@@ -68,7 +71,7 @@ def find_generate_errors():
 				continue
 			file_errors[m.group(2)] = m.groupdict()
 
-	errors_path = Path(plugin_path,"generate_errors.txt")
+	errors_path = Path(txt_file_path,"generate_errors.txt")
 	with open(errors_path, "w") as error_log:
 		for file_path, match_dict in file_errors.items():
 			file_path = Path(file_path)
