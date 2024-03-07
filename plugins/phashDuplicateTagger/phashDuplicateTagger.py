@@ -270,7 +270,7 @@ def generate_phash():
 	query = """mutation MetadataGenerate($input: GenerateMetadataInput!) {
 		metadataGenerate(input: $input)
 	}"""
-	variables = {"phashes", True}
+	variables = {"phashes": True}
 	stash._callGraphQL(query, variables)
 
 if __name__ == "__main__":
