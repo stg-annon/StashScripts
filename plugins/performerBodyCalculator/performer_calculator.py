@@ -4,12 +4,12 @@ import config
 from body_tags import *
 
 try:
-    import stashapi.log as log
-    log.LEVEL = config.log_level
+    from stashapi.log import StashLogger
 except ModuleNotFoundError:
     print("You need to install stashapp-tools. (https://pypi.org/project/stashapp-tools/)", file=sys.stderr)
     print("If you have pip (normally installed with python), run this command in a terminal (cmd): 'pip install stashapp-tools'", file=sys.stderr)
     sys.exit()
+log = StashLogger(config.log_level)
 
 class DebugException(Exception):
     pass
