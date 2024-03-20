@@ -6,6 +6,7 @@ log_level = StashLogLevel.INFO
 
 # Comment out tags you dont want in Stash
 TAGS_TO_USE = (
+    # PBCError,
     BodyShape,
     BodyType,
     BreastSize,

@@ -57,6 +57,10 @@ class StashTagEnumComparable(StashTagEnum):
         for enum in cls:
             if enum.within_threshold(compare_value):
                 return enum
+            
+class PBCError(StashTagEnum):
+    BAD_MEASUREMENTS = StashTagDC(description="performer measurements could not be parsed by PBC")
+    NO_BODYSHAPE_MATCH = StashTagDC(description="Could not determine bodyshape from given measurements")
 
 # body mass index determined from calculate_bmi()
 class BodyMassIndex(StashTagEnum):
