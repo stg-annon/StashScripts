@@ -22,6 +22,7 @@ id
 title
 date
 tags { id }
+galleries { id }
 files {
 	size
 	path
@@ -105,6 +106,7 @@ class StashScene:
 		self.title = re.sub(r"^\[Dupe: \d+[KR]\]\s+", "", scene["title"])
 		self.path = file["path"]
 		self.tag_ids = [t["id"] for t in scene["tags"]]
+		self.gallery_ids = [g["id"] for g in scene["galleries"]]
 
 		self.remove_reason = None
 

@@ -186,3 +186,13 @@ def compare_path(self, other):
 		worse, better = self, other
 	worse.remove_reason = "filepath"
 	return better, f"Prefer Filepath {PATH_PRIORITY[better.score]} | {better.id} better than {worse.id}"
+
+def compare_gallery_count(self, other):
+    if self.gallery_ids.length == other.gallery_ids.length:
+        return
+    if self.gallery_ids.length > other.gallery_ids.length:
+        better, worse = self, other
+    else:
+        worse, better = self, other
+    worse.remove_reason = "gallery count"
+    return better, f"More Galleries {better.id}:{better.height}p > {worse.id}:{worse.gallery_ids}"
