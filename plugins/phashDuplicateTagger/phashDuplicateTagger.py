@@ -1,5 +1,6 @@
 import re, sys, json
 import datetime as dt
+from pathlib import Path
 from string import Template
 from inspect import getmembers, isfunction
 
@@ -14,7 +15,6 @@ except ModuleNotFoundError:
 import config
 
 FRAGMENT = json.loads(sys.stdin.read())
-MODE = FRAGMENT["args"]["mode"]
 stash = StashInterface(FRAGMENT["server_connection"])
 
 SLIM_SCENE_FRAGMENT = """
@@ -35,8 +35,9 @@ files {
 }
 """
 
-def main():
-
+def plugin_main():
+	MODE = FRAGMENT["args"]["mode"]
+	
 	if MODE == "remove":
 		clean_scenes()
 		for tag in get_managed_tags():
@@ -49,6 +50,9 @@ def main():
 	if MODE == "tag_medium":
 		process_duplicates(PhashDistance.MEDIUM)
 
+	if MODE == "split_merged_oshash":
+		split_out_oshash_matches()
+
 	if MODE == "clean_scenes":
 		clean_scenes()
 	if MODE == "generate_phash":
@@ -56,12 +60,13 @@ def main():
 
 	log.exit("Plugin exited normally.")
 
+def hooks_main():
+	hook_context = FRAGMENT["args"]["hookContext"]
+	if hook_context["input"]["delete_file"] == False:
+		return # skip hook if file is not actually being deleted
+	scene_ids = hook_context["input"]["ids"]
+	# need pre hook to work, need to preemptively grab title and work backwards to auto clean remaining scenes
 
-try:
-	TITLE_TEMPLATE = Template(config.SCENE_TITLE_TEMPLATE)
-except Exception as e:
-	log.warning(f"Issue using config.SCENE_TITLE_TEMPLATE {e}, using default template instead")
-	TITLE_TEMPLATE = Template("$group_size|$scene_id$flag")
 def format_title(group_size, scene_id, flag, title):
 	user_template = TITLE_TEMPLATE.substitute({
 		"group_size":group_size,
@@ -156,7 +161,9 @@ def process_duplicates(distance:PhashDistance=PhashDistance.EXACT):
 		filtered_group = []
 		for scene in scene_group:
 			if ignore_tag_id in scene.tag_ids:
-				log.debug(f"Ignore {scene.id} {scene.title}")
+				log.debug(f"Ignore from Tag {scene.id} {scene.title}")
+			elif any([Path(ignore_path) in Path(scene.path).parents for ignore_path in config.IGNORE_PATHS]):
+				log.warning(f"Ignore from Path {scene.id} {scene.path}")
 			else:
 				filtered_group.append(scene)
 
@@ -249,7 +256,6 @@ def clean_scenes():
 			"tag_ids": {"mode": "REMOVE", "ids": [tag["id"]]},
 		})
 
-
 def get_managed_tags(fragment="id name"):
 	tags = stash.find_tags(
 		f={"name": {"value": "^\\[Reason", "modifier": "MATCHES_REGEX"}},
@@ -266,8 +272,41 @@ def get_managed_tags(fragment="id name"):
 			tags.append(tag)
 	return tags
 
+def split_out_oshash_matches():
+
+	dupe_oshash_rows = stash.sql_query('SELECT fingerprint, COUNT(*) c FROM files_fingerprints WHERE type is "oshash" GROUP BY fingerprint HAVING c > 1;').get("rows", [])
+
+	ignore_tag_id = stash.find_tag(config.IGNORE_TAG_NAME, create=True).get("id")
+
+	for i, row in enumerate(dupe_oshash_rows):
+		oshash, _ = row
+		scenes = stash.find_scenes({
+			"oshash":{"value": oshash, "modifier": "EQUALS"},
+			"file_count":{"modifier": "GREATER_THAN","value": 1 },
+			"tags":{"excludes": [ignore_tag_id], "modifier": "INCLUDES_ALL"},
+		}, fragment="id title files {id fingerprints  { type value } }")
+
+		for s in scenes:
+			for f in s["files"][1:]:
+				for fingerprint in f["fingerprints"]:
+					if fingerprint["value"] == oshash:
+						stash.create_scene({
+							"title": s["title"],
+							"file_ids":[f["id"]]
+						})
+		log.progress(i/len(dupe_oshash_rows))
+
 if __name__ == "__main__":
+	if FRAGMENT["args"].get("hookContext"):
+		hooks_main()
+
+	try:
+		TITLE_TEMPLATE = Template(config.SCENE_TITLE_TEMPLATE)
+	except Exception as e:
+		log.warning(f"Issue using config.SCENE_TITLE_TEMPLATE {e}, using default template instead")
+		TITLE_TEMPLATE = Template("$group_size|$scene_id$flag")\
+
 	for name, func in getmembers(config, isfunction):
 		if re.match(r"^compare_", name):
 			setattr(StashScene, name, func)
-	main()
+	plugin_main()

@@ -29,6 +29,7 @@ KEEP_TAG_NAME = "[PDT: Keep]"
 REMOVE_TAG_NAME = "[PDT: Remove]"
 UNKNOWN_TAG_NAME = "[PDT: Unknown]"
 IGNORE_TAG_NAME = "[PDT: Ignore]"
+IGNORE_PATHS = []
 
 
 def compare_bitrate_per_pixel(self, other):

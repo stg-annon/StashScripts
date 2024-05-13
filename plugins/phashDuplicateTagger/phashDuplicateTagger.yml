@@ -32,6 +32,11 @@ tasks:
     defaultArgs:
       mode: clean_scenes
   - name: 'Split Merged OSHashes'
-    description: 'splits merged identical OSHashes into their own scenes'
+    description: 'splits merged identical OSHashes into their own scenes excluding scenes with the ignore tag'
     defaultArgs:
       mode: split_merged_oshash
+# hooks:
+#   - name: pdt_delete_hook
+#     description: on delete cleans the title of grouped scenes
+#     triggeredBy: 
+#       - Scene.Destroy.Pre
