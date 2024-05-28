@@ -77,12 +77,13 @@ async function draw() {
   if (source.data.findTags.count == 0){ alert("Could not find any tags with parent or sub tags, add parent or sub tags for them to show in the graph"); }
   console.log(`Found ${source.data.findTags.count} tags with parents/children`)
 
-  var exclude = await getTags(excludeTagFilter);
-  console.log(`Found ${exclude.data.findTags.count} tags to exclude`)
+  if (Object.keys(excludeTagFilter).length !== 0){
+    var exclude = await getTags(excludeTagFilter);
+    excludeTagIDs = excludeTagIDs.concat(exclude.data.findTags.tags.map(t => t.id))
+  }
+  console.log(`Found ${excludeTagIDs.length} tags to exclude`)
 
-  var excludeIds = excludeTagIDs.concat(exclude.data.findTags.tags.map(t => t.id))
-
-  var data = parse(source.data.findTags.tags, excludeIds)
+  var data = parse(source.data.findTags.tags, excludeTagIDs)
 
   console.log(data)
 
