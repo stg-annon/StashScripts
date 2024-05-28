@@ -2,14 +2,23 @@
 <meta charset="utf-8">
 <style>
   body {
-    margin: 0
+    margin: 0;
+    display: grid;
+    grid-template-areas: 'graph graph graph options';
   }
   #taggraph {
+    padding: 0.5em;
     background-color: #202b33;
+  }
+  #graphoptions {
+    background-color: #ffffff;
+    max-width: 510px;
   }
 </style>
 <script src="./vis.min.js"></script>
+<script src="./config.js"></script>
 <script src="./parse.js"></script>
 <body onload="draw()">
   <div id="taggraph"></div>
+  <div id="graphoptions"></div>
 </body>

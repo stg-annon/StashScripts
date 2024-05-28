@@ -1,9 +1,31 @@
-function parse(source) {
+var network = null;
+
+async function GQL(query, variables){
+  return fetch("/graphql", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({query, variables})
+  }).then(r => r.json())
+}
+
+async function getPluginConfig(pluginId){
+  const query=`query FindPluginConfig($input: [String!]){ configuration { plugins (include: $input) } }`
+  let config = await GQL(query, {"input": [pluginId]})
+  try {
+    return config.data.configuration.plugins[pluginId]  
+  } catch (error) {
+    return
+  }
+}
+
+function parse(tags, excludeIds) {
     const nodes = []
     const edges = []
-    for (const tag of source.data.findTags.tags) {
+    for (const tag of tags) {
+      if (excludeIds.includes(tag.id)){ continue; }
       nodes.push({
           id: tag.id,
+          value: tag.scene_count,
           shape: "circularImage", // could also just use "image" here
           image: tag.image_path,
           label: tag.name
@@ -15,7 +37,7 @@ function parse(source) {
     return { nodes, edges }
 }
 
-async function getTags() {
+async function getTags(tagFilter) {
 
   const query = `query FindTags($filter: FindFilterType, $tag_filter: TagFilterType) {
       findTags(filter: $filter, tag_filter: $tag_filter) {
@@ -24,33 +46,43 @@ async function getTags() {
                   id
                   name
                   image_path
+                  scene_count
                   parents { id }
                   children { id }
               }
       }
   }`
+
   const variables = {
-      "tag_filter": {
-          "child_count": {"modifier": "GREATER_THAN", "value": 0},
-          "OR": {"parent_count": {"modifier": "GREATER_THAN", "value": 0}},
-      },
+      "tag_filter": tagFilter,
       "filter": {"q": "", "per_page": -1},
   }
-  const source = await fetch("/graphql", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ query:query, variables:variables })
-  }).then(r => r.json())
-  console.log(`Found ${source.data.findTags.count} tags with parents/children`)
-  return parse(source)
 
+  return await GQL(query, variables) 
 }
-var network = null;
 
 async function draw() {
 
-  var container = document.getElementById("taggraph");
-  var data = await getTags();
+  var pluginConfig = await getPluginConfig("tag-graph")
+
+  var networkContainer = document.getElementById("taggraph");
+  var optionsContainer = document.getElementById("graphoptions");
+
+  var source = await getTags({
+    "child_count": {"modifier": "GREATER_THAN", "value": 0},
+      "OR":{
+    "parent_count": {"modifier": "GREATER_THAN", "value": 0}}
+  });
+
+  if (source.data.findTags.count == 0){ alert("Could not find any tags with parent or sub tags, add parent or sub tags for them to show in the graph"); }
+  console.log(`Found ${source.data.findTags.count} tags with parents/children`)
+
+  var exclude = await getTags(excludeTagFilter);
+  console.log(`Found ${exclude.data.findTags.count} tags to exclude`)
+
+  var excludeIds = excludeTagIDs.concat(exclude.data.findTags.tags.map(t => t.id))
+
+  var data = parse(source.data.findTags.tags, excludeIds)
 
   console.log(data)
 
@@ -58,7 +90,10 @@ async function draw() {
     autoResize: true,
     height: `${window.screen.height}px`, //100% does not seem to work here
     width: "100%",
-    configure: { enabled: false }, //set to true to enable config options
+    configure: { 
+      enabled: pluginConfig?.options, //set to true to enable config options 
+      container: optionsContainer
+    }, 
     nodes: {
       color: {
         border: "#adb5bd",
@@ -77,5 +112,5 @@ async function draw() {
       improvedLayout: false
     }
   };
-  network = new vis.Network(container, data, options);
+  network = new vis.Network(networkContainer, data, options);
 }
