@@ -4,4 +4,4 @@
 const excludeTagFilter = {}
 
 // add tag IDs that you want to exclude to this array
-const excludeTagIDs = [];
+var excludeTagIDs = [];
