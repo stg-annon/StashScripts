@@ -1,7 +1,6 @@
-# To view, go to `http://localhost:9999/plugin/tag-graph/assets/graph/`
-name: tag-graph
-description: Interactive tag graph with vis.js
-version: 2.2
+name: Tag Graph
+description: Interactive tag graph with vis.js, to view go to http://localhost:9999/plugin/tagGraph/assets/graph/
+version: 2.3
 url: https://github.com/stg-annon/StashScripts/tree/main/plugins/tagGraph
 ui:
   assets:

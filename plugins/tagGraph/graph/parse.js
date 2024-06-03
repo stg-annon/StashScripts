@@ -63,7 +63,7 @@ async function getTags(tagFilter) {
 
 async function draw() {
 
-  var pluginConfig = await getPluginConfig("tag-graph")
+  var pluginConfig = await getPluginConfig("tagGraph")
 
   var networkContainer = document.getElementById("taggraph");
   var optionsContainer = document.getElementById("graphoptions");
