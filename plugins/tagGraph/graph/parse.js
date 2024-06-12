@@ -9,7 +9,7 @@ async function GQL(query, variables){
 }
 
 async function getPluginConfig(pluginId){
-  const query=`query FindPluginConfig($input: [String!]){ configuration { plugins (include: $input) } }`
+  const query=`query FindPluginConfig($input: [ID!]){ configuration { plugins (include: $input) } }`
   let config = await GQL(query, {"input": [pluginId]})
   try {
     return config.data.configuration.plugins[pluginId]  
