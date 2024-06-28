@@ -41,7 +41,7 @@ def find_scan_errors():
 	log_path = stash.get_configuration("general { logFile }")["general"]["logFile"]
 	
 	file_errors = {}
-	with open(log_path, mode="r") as log_file:
+	with open(log_path, mode="r", encoding="utf-8") as log_file:
 		for i, line in enumerate(log_file):
 			try:
 				if m := re.match(ffprobe_pattern, line):
