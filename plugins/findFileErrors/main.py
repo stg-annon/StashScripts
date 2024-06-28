@@ -42,11 +42,12 @@ def find_scan_errors():
 	
 	file_errors = {}
 	with open(log_path, mode="r") as log_file:
-		for line in log_file:
-			m = re.match(ffprobe_pattern, line)
-			if not m:
-				continue
-			file_errors[m.group(2)] = m.groupdict()
+		for i, line in enumerate(log_file):
+			try:
+				if m := re.match(ffprobe_pattern, line):
+					file_errors[m.group(2)] = m.groupdict()
+			except Exception as e:
+				log.debug(f"error reading line {i} of log file: {e}")
 
 	errors_path = Path(txt_file_path,"scan_errors.txt")
 	with open(errors_path, "w") as error_log:
