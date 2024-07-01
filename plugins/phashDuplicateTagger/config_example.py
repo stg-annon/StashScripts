@@ -1,5 +1,3 @@
-from pathlib import Path
-
 import stashapi.log as log
 from stashapi.tools import human_bytes, human_bits
 
@@ -163,18 +161,14 @@ def compare_path(self, other):
 		return
 	if not self.path or not other.path:
 		return
-	
-	self.path = Path(self.path)
-	other.path = Path(other.path)
 
 	min_score = len(PATH_PRIORITY)
 	self.score = min_score
 	other.score = min_score
 	for score, path in enumerate(PATH_PRIORITY):
-		path = Path(path)
-		if path in self.path.parents:
+		if path in self.path:
 			self.score = score
-		if path in other.path.parents:
+		if path in other.path:
 			other.score = score
 
 	if self.score == other.score:

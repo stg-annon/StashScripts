@@ -1,6 +1,6 @@
-name: "PDT"
-description: PDT (PHash Duplicate Tagger) Will tag scenes based on duplicate PHashes for easier/safer removal.
-version: 0.1.4
+name: "PHash Duplicate Tagger"
+description: PHash Duplicate Tagger (PDT) Will tag scenes based on duplicate PHashes for easier/safer removal.
+version: 0.1.5
 url: https://github.com/stg-annon/StashScripts/tree/main/plugins/phashDuplicateTagger
 exec:
   - python
