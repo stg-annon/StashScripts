@@ -1,15 +1,16 @@
 import re, sys
+import logging as log
 
 import config
 from body_tags import *
 
 try:
-    from stashapi.log import StashLogger
+    from stashapi.log import StashLogHandler
 except ModuleNotFoundError:
     print("You need to install stashapp-tools. (https://pypi.org/project/stashapp-tools/)", file=sys.stderr)
     print("If you have pip (normally installed with python), run this command in a terminal (cmd): 'pip install stashapp-tools'", file=sys.stderr)
     sys.exit()
-log = StashLogger(config.log_level)
+log.basicConfig(format="%(message)s", handlers=[StashLogHandler()], level=config.log_level)
 
 class DebugException(Exception):
     pass
@@ -76,7 +77,7 @@ class StashPerformer:
             raise DebugException(f"No measurements found for {str(self)}")
 
         # Full Measurements | Band, Cup Size, Waist, Hips | Example: "32D-28-34"
-        if band_cup_waist_hips := re.match(r'^(?P<band>\d+)(?P<cupsize>[a-zA-Z]+)\-(?P<waist>\d+)\-(?P<hips>\d+)$', self.measurements):    
+        if band_cup_waist_hips := re.match(r'^(?P<band>\d+)(?P<cupsize>[a-zA-Z]+)\-(?P<waist>\d+)\-(?P<hips>\d+)$', self.measurements):
             m = band_cup_waist_hips.groupdict()
 
         # Fashion Measurements | Bust, Waist, Hips | Example: "36-28-34"
@@ -84,7 +85,7 @@ class StashPerformer:
             m = bust_waist_hips.groupdict()
 
         # Bra Measurements | Band, Cup Size | Example: "32D", "32D (81D)", "32D-??-??"
-        elif band_cup := re.match(r'^(?P<band>\d+)(?P<cupsize>[a-zA-Z]+)', self.measurements):   
+        elif band_cup := re.match(r'^(?P<band>\d+)(?P<cupsize>[a-zA-Z]+)', self.measurements):
             m = band_cup.groupdict()
 
         # Error cant parse given measurements

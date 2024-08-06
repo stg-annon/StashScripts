@@ -1,4 +1,5 @@
 import sys, json
+import logging as log
 from collections import defaultdict 
 
 import config
@@ -6,15 +7,14 @@ from performer_calculator import *
 from body_tags import *
 
 try:
-    from stashapi.log import StashLogger
+    from stashapi.log import StashLogHandler
     from stashapi.stashapp import StashInterface
     from stashapi.stash_types import OnMultipleMatch
 except ModuleNotFoundError:
     print("You need to install stashapp-tools. (https://pypi.org/project/stashapp-tools/)", file=sys.stderr)
     print("If you have pip (normally installed with python), run this command in a terminal (cmd): 'pip install stashapp-tools'", file=sys.stderr)
     sys.exit()
-
-log = StashLogger(config.log_level)
+log.basicConfig(format="%(message)s", handlers=[StashLogHandler()], level=config.log_level)
 
 def main(stash_in=None, mode_in=None):
     global stash
