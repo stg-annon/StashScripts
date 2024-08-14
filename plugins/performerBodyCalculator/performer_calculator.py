@@ -178,10 +178,7 @@ class StashPerformer:
         # only tuned on female heights
         if not self.height_cm or self.gender != 'FEMALE':
             return
-        if self.height_cm > 160 and self.height_cm < 180:
-            height_type = HeightType.AVERAGE
-        else:
-            height_type = HeightType.match_threshold(self.height_cm)
+        height_type = HeightType.match_threshold(self.height_cm)
         if height_type:
             self.tags_list.append(height_type)
 
