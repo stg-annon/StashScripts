@@ -12,7 +12,10 @@ try:
 except ModuleNotFoundError:
 	print("You need to install the stashapi module. (pip install stashapp-tools)", file=sys.stderr)
 
-import config
+try:
+	import config
+except ModuleNotFoundError:
+	log.exit(err="could not import config, have you renamed config_example.py to config.py?")
 
 FRAGMENT = json.loads(sys.stdin.read())
 stash = StashInterface(FRAGMENT["server_connection"])
