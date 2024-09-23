@@ -72,10 +72,11 @@ class BodyMassIndex(StashTagEnum):
     OBESE_CLASS_2 = StashTagDC(description='BMI: Obese Class 2')
     SEVERELY_OBESE = StashTagDC(description='BMI: Extremely Obese')
 
-class HipSize(StashTagEnum):
-    WIDE = StashTagDC()
-    MEDIUM = StashTagDC()
-    SLIM = StashTagDC()
+# Determined from Waist to Hip ratio
+class HipSize(StashTagEnumComparable):
+    WIDE = StashTagDC(threshold=(operator.le, 0.64))
+    MEDIUM = StashTagDC(threshold=(operator.gt, 0.64))
+    SLIM = StashTagDC(threshold=(operator.gt, 0.8))
 
 class BreastCup(StashTagEnumComparable):
     AA = StashTagDC(threshold=(operator.contains, ['AA']))
@@ -190,19 +191,6 @@ class ButtSize(StashTagEnumComparable):
     LARGE   = StashTagDC(threshold=(operator.lt, 44))
     HUGE    = StashTagDC(threshold=(operator.lt, 48))
     MASSIVE = StashTagDC(threshold=(operator.ge, 48))
-
-def calculate_hip_size(performer):
-    if not performer.waist or not performer.hips:
-        return None
-
-    whr = performer.waist / performer.hips
-
-    if whr > 0.8:
-        return HipSize.WIDE
-    elif whr > 0.64:
-        return HipSize.MEDIUM
-    else:
-        return HipSize.SLIM
          
 # https://www.ncbi.nlm.nih.gov/books/NBK541070/
 def calculate_bmi(performer):

@@ -75,6 +75,7 @@ class StashPerformer:
 
         if self.measurements == "":
             log.warning(f"No measurements found for {str(self)}")
+            return
 
         # Full Measurements | Band, Cup Size, Waist, Hips | Example: "32D-28-34"
         if band_cup_waist_hips := re.match(r'^(?P<band>\d+)(?P<cupsize>[a-zA-Z]+)\-(?P<waist>\d+)\-(?P<hips>\d+)$', self.measurements):
@@ -165,7 +166,9 @@ class StashPerformer:
             self.tags_list.append(breast_cup)
 
     def set_hip_size(self):
-        if hip_size := calculate_hip_size(self):
+        if not self.waist or not self.hips:
+            return None
+        if hip_size := HipSize.match_threshold((self.waist/self.hips)):
             self.tags_list.append(hip_size)
 
     def set_butt_size(self):
