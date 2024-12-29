@@ -28,7 +28,7 @@ def main():
 		tag_scenes_with_file_errors(file_errors)
 	if MODE == "scan_check":
 		stash.metadata_scan()
-		stash.run_plugin_task("findFileErrors", "scan_errors")
+		stash.run_plugin_task("findFileErrors", "Find Scan Errors")
 	# TODO
 	# if MODE == "generate_check":
 	# 	stash.metadata_generate()
