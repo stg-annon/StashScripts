@@ -11,6 +11,7 @@ txt_file_path = Path(plugin_path, "errors")
 txt_file_path.mkdir(exist_ok=True)
 
 TAG_TEMPLATE = Template("[FileError] $error_type generation error")
+FILE_ENCODING = "utf-8"
         
 def main():
 	global stash
@@ -37,20 +38,20 @@ def main():
 	log.exit("ok")
 
 def find_scan_errors():
-	ffprobe_pattern = r'^time=".+?" level=error msg="error processing.+?: running ffprobe on .+?: (?P<probe>FFProbe encountered an error with <(?P<file>.+)>.+$)'
+	ffprobe_pattern = r'(?P<probe>FFProbe encountered an error with <(?P<file>.+)>)'
 	log_path = stash.get_configuration("general { logFile }")["general"]["logFile"]
 	
 	file_errors = {}
-	with open(log_path, mode="r", encoding="utf-8") as log_file:
+	with open(log_path, mode="r", encoding=FILE_ENCODING) as log_file:
 		for i, line in enumerate(log_file):
 			try:
-				if m := re.match(ffprobe_pattern, line):
+				if m := re.search(ffprobe_pattern, line):
 					file_errors[m.group(2)] = m.groupdict()
 			except Exception as e:
 				log.debug(f"error reading line {i} of log file: {e}")
 
 	errors_path = Path(txt_file_path,"scan_errors.txt")
-	with open(errors_path, "w") as error_log:
+	with open(errors_path, "w", encoding=FILE_ENCODING) as error_log:
 		for file_path, match_dict in file_errors.items():
 			file_path = Path(file_path)
 			if not file_path.exists():
@@ -65,7 +66,7 @@ def find_generate_errors():
 	
 	# find errors in log file
 	file_errors = {}
-	with open(log_path, mode="r") as log_file:
+	with open(log_path, mode="r", encoding=FILE_ENCODING) as log_file:
 		for line in log_file:
 			m = re.search(generate_pattern, line)
 			if not m:
@@ -73,7 +74,7 @@ def find_generate_errors():
 			file_errors[m.group(2)] = m.groupdict()
 
 	errors_path = Path(txt_file_path,"generate_errors.txt")
-	with open(errors_path, "w") as error_log:
+	with open(errors_path, "w", encoding=FILE_ENCODING) as error_log:
 		for file_path, match_dict in file_errors.items():
 			file_path = Path(file_path)
 			if not file_path.exists():
@@ -92,7 +93,7 @@ def tag_scenes_with_file_errors(file_errors):
 	# find scene in stash with file
 	scene_ids_with_errors = 0
 	for i, error_tuple in enumerate(file_errors.items()):
-		file_path, error_dict =error_tuple
+		file_path, error_dict = error_tuple
 		log.progress(i/count)
 		file_path = Path(file_path)
 		scenes = stash.find_scenes({
