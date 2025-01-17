@@ -15,4 +15,7 @@ The tags will be generated or will use existing tags, the plugin looks for tags 
 
 ### Config
 rename `example_config.py` to `config.py`
-if you den't want specific tags you can comment them out in the config
+if you don't want specific tags you can comment them out in the config
+
+### Credits
+@badde57 @feederbox826 @melon-scientist 
