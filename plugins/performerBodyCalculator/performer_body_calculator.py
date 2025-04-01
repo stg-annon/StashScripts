@@ -60,7 +60,7 @@ def run_calculator():
 
     log.info("Parsing Performers...")
     for p in performers:
-        if p.get("gender") != 'FEMALE':
+        if not p.get("measurments"):
             continue
 
         p_id = f"{p['name']} ({p['id']})"
