@@ -74,8 +74,7 @@ class StashPerformer:
         self.measurements = self.measurements.replace(" ", "")
 
         if self.measurements == "":
-            log.warning(f"No measurements found for {str(self)}")
-            return
+            raise DebugException(f"No measurements found for {str(self)}")
 
         # Full Measurements | Band, Cup Size, Waist, Hips | Example: "32D-28-34"
         if band_cup_waist_hips := re.match(r'^(?P<band>\d+)(?P<cupsize>[a-zA-Z]+)\-(?P<waist>\d+)\-(?P<hips>\d+)$', self.measurements):
