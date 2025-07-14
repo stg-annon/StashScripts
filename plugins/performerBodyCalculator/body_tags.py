@@ -75,8 +75,8 @@ class BodyMassIndex(StashTagEnum):
 # Determined from Waist to Hip ratio
 class HipSize(StashTagEnumComparable):
     WIDE = StashTagDC(threshold=(operator.le, 0.64))
-    MEDIUM = StashTagDC(threshold=(operator.gt, 0.64))
-    SLIM = StashTagDC(threshold=(operator.gt, 0.8))
+    MEDIUM = StashTagDC(threshold=(operator.lt, 0.8))
+    SLIM = StashTagDC(threshold=(operator.ge, 0.8))
 
 class BreastCup(StashTagEnumComparable):
     AA = StashTagDC(threshold=(operator.contains, ['AA']))
