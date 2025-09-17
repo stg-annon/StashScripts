@@ -22,7 +22,7 @@ class ErrorException(Exception):
 CM_TO_INCH = 2.54
 PERFORMER_FRAGMENT = """
 id
-name 
+name
 measurements
 weight
 height_cm
@@ -64,7 +64,7 @@ class StashPerformer:
 
         self.match_body_shapes()
         self.set_type_descriptor()
-         
+
     def parse_measurements(self):
         if self.weight:
             self.weight = float(self.weight)
@@ -80,6 +80,10 @@ class StashPerformer:
         if band_cup_waist_hips := re.match(r'^(?P<band>\d+)(?P<cupsize>[a-zA-Z]+)\-(?P<waist>\d+)\-(?P<hips>\d+)$', self.measurements):
             m = band_cup_waist_hips.groupdict()
 
+        # Full Measurements | Cup Size, Band, Waist, Hips | Example: "D32-26-34", "DD32-23-27", "H35-26-37"
+        elif cup_band_waist_hips := re.match(r'^(?P<cupsize>[a-zA-Z]+)(?P<band>\d+)\-(?P<waist>\d+)\-(?P<hips>\d+)$', self.measurements):
+            m = cup_band_waist_hips.groupdict()
+
         # Fashion Measurements | Bust, Waist, Hips | Example: "36-28-34"
         elif bust_waist_hips := re.match(r'^(?P<bust>\d+)\-(?P<waist>\d+)\-(?P<hips>\d+)$', self.measurements):
             m = bust_waist_hips.groupdict()
@@ -87,6 +91,20 @@ class StashPerformer:
         # Bra Measurements | Band, Cup Size | Example: "32D", "32D (81D)", "32D-??-??"
         elif band_cup := re.match(r'^(?P<band>\d+)(?P<cupsize>[a-zA-Z]+)', self.measurements):
             m = band_cup.groupdict()
+
+        # Bra Measurements | Cup Size, Band | Example: "D32", "B32-None-None", "DDD32-None-None", "DDD38-None-None"
+        elif cup_band := re.match(r'^(?P<cupsize>[a-zA-Z]+)(?P<band>\d+)', self.measurements):
+            m = cup_band.groupdict()
+
+        # Body Measurements | Waist, Hips | Example: "NoneNone-23-35"
+        elif waist_hips := re.match(r'^NoneNone\-(?P<waist>\d+)\-(?P<hips>\d+)$', self.measurements):
+            m = waist_hips.groupdict()
+
+        # Example of other formats used in some databases:
+        # "NoneNone-23-35"
+        # "37-None-None"
+        # "86/64/89"
+        # "NoneNone-None-9"  ?
 
         # Error cant parse given measurements
         else:
@@ -175,7 +193,7 @@ class StashPerformer:
             return
         if butt_size := ButtSize.match_threshold(self.hips):
             self.tags_list.append(butt_size)
-    
+
     def set_height_type(self):
         # only tuned on female heights
         if not self.height_cm or self.gender != 'FEMALE':
