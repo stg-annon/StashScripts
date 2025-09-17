@@ -84,8 +84,8 @@ class StashPerformer:
         elif cup_band_waist_hips := re.match(r'^(?P<cupsize>[a-zA-Z]+)(?P<band>\d+)\-(?P<waist>\d+)\-(?P<hips>\d+)$', self.measurements):
             m = cup_band_waist_hips.groupdict()
 
-        # Fashion Measurements | Bust, Waist, Hips | Example: "36-28-34"
-        elif bust_waist_hips := re.match(r'^(?P<bust>\d+)\-(?P<waist>\d+)\-(?P<hips>\d+)$', self.measurements):
+        # Fashion Measurements | Bust, Waist, Hips | Example: "36-28-34", "86/64/89"
+        elif bust_waist_hips := re.match(r'^(?P<bust>\d+)[-/](?P<waist>\d+)[-/](?P<hips>\d+)$', self.measurements):
             m = bust_waist_hips.groupdict()
 
         # Bra Measurements | Band, Cup Size | Example: "32D", "32D (81D)", "32D-??-??"
@@ -103,7 +103,6 @@ class StashPerformer:
         # Example of other formats used in some databases:
         # "NoneNone-23-35"
         # "37-None-None"
-        # "86/64/89"
         # "NoneNone-None-9"  ?
 
         # Error cant parse given measurements
