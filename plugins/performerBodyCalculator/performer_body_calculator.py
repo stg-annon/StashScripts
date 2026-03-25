@@ -2,10 +2,6 @@ import sys, json
 import logging as log
 from collections import defaultdict 
 
-import config
-from performer_calculator import *
-from body_tags import *
-
 try:
     from stashapi.log import StashLogHandler
     from stashapi.stashapp import StashInterface
@@ -14,18 +10,18 @@ except ModuleNotFoundError:
     print("You need to install stashapp-tools. (https://pypi.org/project/stashapp-tools/)", file=sys.stderr)
     print("If you have pip (normally installed with python), run this command in a terminal (cmd): 'pip install stashapp-tools'", file=sys.stderr)
     sys.exit()
+
+fragment = json.loads(sys.stdin.read())
+mode = fragment['args']['mode']
+stash = StashInterface(fragment["server_connection"])
+stash.ensure_plugin_config_file("example_config.py", "config.py")
+
+import config
+from performer_calculator import *
+from body_tags import *
 log.basicConfig(format="%(message)s", handlers=[StashLogHandler()], level=config.log_level)
 
-def main(stash_in=None, mode_in=None):
-    global stash
-
-    if stash_in:
-        stash = stash_in
-        mode = mode_in
-    else:
-        fragment = json.loads(sys.stdin.read())
-        stash = StashInterface(fragment["server_connection"])
-        mode = fragment['args']['mode']
+def main():
 
     if mode == "run_calculator":
         run_calculator()
