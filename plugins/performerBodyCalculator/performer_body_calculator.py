@@ -7,16 +7,20 @@ try:
     from stashapi.stashapp import StashInterface
     from stashapi.stash_types import OnMultipleMatch
 except ModuleNotFoundError:
-    print("You need to install stashapp-tools. (https://pypi.org/project/stashapp-tools/)", file=sys.stderr)
+    print("You need to install stashapi. (https://pypi.org/project/stashapi/)", file=sys.stderr)
     print("If you have pip (normally installed with python), run this command in a terminal (cmd): 'pip install stashapp-tools'", file=sys.stderr)
     sys.exit()
 
 fragment = json.loads(sys.stdin.read())
 mode = fragment['args']['mode']
 stash = StashInterface(fragment["server_connection"])
-stash.ensure_plugin_config_file("example_config.py", "config.py")
 
-import config
+try:
+    import config
+except ModuleNotFoundError:
+    stash.ensure_plugin_config_file("example_config.py", "config.py")
+    import config
+
 from performer_calculator import *
 from body_tags import *
 log.basicConfig(format="%(message)s", handlers=[StashLogHandler()], level=config.log_level)
